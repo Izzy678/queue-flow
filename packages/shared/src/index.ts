@@ -16,3 +16,14 @@ export {
   type CreateBranchRequest,
   type UpdateBranchRequest,
 } from "./types/branch";
+
+export {
+  type Tenant,
+  type UpdateTenantRequest,
+} from "./types/tenant";
+
+export {
+  type TeamMember,
+  type CreateTeamMemberRequest,
+  type UpdateTeamMemberRequest,
+} from "./types/team";
