@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { LoginForm } from "@/components/auth/login-form";
+import { GuestGuard } from "@/components/auth/guest-guard";
 
 export const metadata = {
   title: "Sign in — QueueFlow",
@@ -7,7 +9,9 @@ export const metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen grid lg:grid-cols-2">
+    <Suspense>
+      <GuestGuard>
+        <div className="min-h-screen grid lg:grid-cols-2">
       <div className="relative hidden lg:flex flex-col justify-between border-r border-border bg-surface p-10">
         <Link href="/" className="flex items-center gap-2.5">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent">
@@ -54,6 +58,8 @@ export default function LoginPage() {
           <LoginForm />
         </div>
       </div>
-    </div>
+        </div>
+      </GuestGuard>
+    </Suspense>
   );
 }
