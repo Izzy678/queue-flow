@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { footerLinks } from "@/lib/landing-data";
@@ -21,10 +22,12 @@ export function Footer() {
               The modern queue management platform that eliminates waiting and
               delights customers at every touchpoint.
             </p>
-            <Button variant="gradient" size="sm">
-              Start free trial
-              <ArrowRight className="h-4 w-4" />
-            </Button>
+            <Link href="/register">
+              <Button variant="gradient" size="sm">
+                Start free trial
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
           </div>
 
           <div className="grid grid-cols-3 gap-8">

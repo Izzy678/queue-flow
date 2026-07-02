@@ -1,4 +1,5 @@
 import { ArrowRight, Play } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { DashboardMock } from "@/components/dashboard/dashboard-mock";
 import { FloatingTicket } from "@/components/dashboard/floating-ticket";
@@ -38,10 +39,12 @@ export function Hero() {
 
             <Reveal delay={0.3}>
               <div className="flex flex-col sm:flex-row gap-3 mb-12">
-                <Button variant="gradient" size="lg">
-                  Start free trial
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
+                <Link href="/register">
+                  <Button variant="gradient" size="lg">
+                    Start free trial
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
                 <Button variant="outline" size="lg">
                   <Play className="h-4 w-4" />
                   Watch demo

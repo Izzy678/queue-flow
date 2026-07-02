@@ -1,4 +1,5 @@
 import { Check } from "lucide-react";
+import Link from "next/link";
 import { Reveal } from "@/components/motion/reveal";
 import { StaggerChildren } from "@/components/motion/stagger-children";
 import { Button } from "@/components/ui/button";
@@ -63,12 +64,14 @@ export function Pricing() {
                   </li>
                 ))}
               </ul>
-              <Button
-                variant={tier.highlighted ? "gradient" : "outline"}
-                className="w-full"
-              >
-                {tier.cta}
-              </Button>
+              <Link href="/register" className="w-full">
+                <Button
+                  variant={tier.highlighted ? "gradient" : "outline"}
+                  className="w-full"
+                >
+                  {tier.cta}
+                </Button>
+              </Link>
             </div>
           ))}
         </StaggerChildren>
