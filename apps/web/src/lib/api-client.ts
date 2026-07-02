@@ -2,14 +2,19 @@ import type {
   AuthMeResponse,
   Branch,
   CreateBranchRequest,
+  CreateTeamMemberRequest,
   LoginRequest,
   RegisterRequest,
+  TeamMember,
+  Tenant,
   UpdateBranchRequest,
+  UpdateTeamMemberRequest,
+  UpdateTenantRequest,
 } from "@queueflow/shared";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
-export type { AuthMeResponse, Branch };
+export type { AuthMeResponse, Branch, TeamMember, Tenant };
 
 async function parseError(res: Response): Promise<string> {
   const body = await res.json().catch(() => ({}));
@@ -81,6 +86,41 @@ export function updateBranch(id: string, payload: UpdateBranchRequest) {
 
 export function deleteBranch(id: string) {
   return apiFetch<{ message: string }>(`/branches/${id}`, {
+    method: "DELETE",
+  });
+}
+
+export function getTenant() {
+  return apiFetch<Tenant>("/tenant");
+}
+
+export function updateTenant(payload: UpdateTenantRequest) {
+  return apiFetch<Tenant>("/tenant", {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function getTeamMembers() {
+  return apiFetch<TeamMember[]>("/users");
+}
+
+export function createTeamMember(payload: CreateTeamMemberRequest) {
+  return apiFetch<TeamMember>("/users", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function updateTeamMember(id: string, payload: UpdateTeamMemberRequest) {
+  return apiFetch<TeamMember>(`/users/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function deleteTeamMember(id: string) {
+  return apiFetch<{ message: string }>(`/users/${id}`, {
     method: "DELETE",
   });
 }
