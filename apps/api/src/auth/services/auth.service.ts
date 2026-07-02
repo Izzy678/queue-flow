@@ -6,7 +6,7 @@ import {
 import { InjectRepository } from "@nestjs/typeorm";
 import * as bcrypt from "bcrypt";
 import { DataSource, Repository } from "typeorm";
-import { Branch, BranchStatus } from "../../branches/branch.entity";
+import { Branch, BranchStatus } from "../../branches/entity/branch.entity";
 import { Tenant, TenantType } from "../../tenants/tenant.entity";
 import { User, UserRole } from "../../users/user.entity";
 import { RegisterDto } from "../dto/auth.dto";

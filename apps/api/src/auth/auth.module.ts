@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { PassportModule } from "@nestjs/passport";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { Branch } from "../branches/branch.entity";
+import { Branch } from "../branches/entity/branch.entity";
 import { Tenant } from "../tenants/tenant.entity";
 import { User } from "../users/user.entity";
 import { AuthController } from "./controllers/auth.controller";

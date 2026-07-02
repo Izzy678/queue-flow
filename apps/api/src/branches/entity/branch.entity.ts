@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { Tenant } from "../tenants/tenant.entity";
+import { Tenant } from "../../tenants/tenant.entity";
 
 export enum BranchStatus {
   ACTIVE = "active",

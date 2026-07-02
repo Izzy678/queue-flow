@@ -6,8 +6,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { Branch } from "../branches/entity/branch.entity";
 import { User } from "../users/user.entity";
-import { Branch } from "../branches/branch.entity";
 
 export enum TenantType {
   ORGANIZATION = "organization",
