@@ -1,21 +1,12 @@
+import type {
+  AuthMeResponse,
+  LoginRequest,
+  RegisterRequest,
+} from "@queueflow/shared";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
-export interface AuthMeResponse {
-  user: {
-    id: string;
-    email: string;
-    name: string;
-    role: string;
-    tenantId: string;
-  };
-  tenant: {
-    id: string;
-    name: string;
-    slug: string;
-    type: string;
-  };
-  branches: { id: string; name: string; status: string }[];
-}
+export type { AuthMeResponse };
 
 async function parseError(res: Response): Promise<string> {
   const body = await res.json().catch(() => ({}));
@@ -45,19 +36,14 @@ export async function apiFetch<T>(
 }
 
 export function login(email: string, password: string) {
+  const payload: LoginRequest = { email, password };
   return apiFetch<AuthMeResponse>("/auth/login", {
     method: "POST",
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify(payload),
   });
 }
 
-export function register(payload: {
-  email: string;
-  password: string;
-  name: string;
-  businessName: string;
-  locationCount?: "one" | "multiple";
-}) {
+export function register(payload: RegisterRequest) {
   return apiFetch<AuthMeResponse>("/auth/register", {
     method: "POST",
     body: JSON.stringify(payload),
