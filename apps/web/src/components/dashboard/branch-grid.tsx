@@ -1,16 +1,43 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import type { AuthBranch } from "@queueflow/shared";
 import { Badge } from "@/components/ui/badge";
-import { dashboardBranches } from "@/lib/dashboard-data";
 import { cn } from "@/lib/utils";
 
-export function BranchGrid({ className }: { className?: string }) {
+export function BranchGrid({
+  branches,
+  className,
+}: {
+  branches: AuthBranch[];
+  className?: string;
+}) {
+  if (branches.length === 0) {
+    return (
+      <div
+        className={cn(
+          "rounded-xl border border-dashed border-border px-6 py-10 text-center",
+          className
+        )}
+      >
+        <p className="text-sm text-muted">No branches yet.</p>
+        <Link
+          href="/dashboard/branches"
+          className="mt-2 inline-block text-sm text-accent hover:underline"
+        >
+          Add your first branch
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className={cn("grid sm:grid-cols-2 border-t border-l border-border", className)}>
-      {dashboardBranches.map((branch) => (
+      {branches.map((branch) => (
         <Link
           key={branch.id}
-          href={`/dashboard/branches`}
+          href="/dashboard/branches"
           className="group border-r border-b border-border p-6 transition-colors hover:bg-surface-hover/50"
         >
           <div className="flex items-start justify-between mb-4">
@@ -19,31 +46,16 @@ export function BranchGrid({ className }: { className?: string }) {
                 {branch.name}
               </h3>
               <p className="text-xs text-muted mt-0.5">
-                {branch.queues} queues · {branch.waiting} waiting
+                Queue stats available once queues are set up
               </p>
             </div>
-            <Badge variant={branch.status === "busy" ? "warning" : "success"}>
+            <Badge variant={branch.status === "active" ? "success" : "default"}>
               {branch.status}
             </Badge>
           </div>
 
-          <div className="grid grid-cols-3 gap-3 text-center">
-            <div>
-              <p className="text-lg font-bold">{branch.queues}</p>
-              <p className="text-[10px] text-muted uppercase tracking-wider">Queues</p>
-            </div>
-            <div>
-              <p className="text-lg font-bold">{branch.served}</p>
-              <p className="text-[10px] text-muted uppercase tracking-wider">Served</p>
-            </div>
-            <div>
-              <p className="text-lg font-bold">{branch.avgWait}</p>
-              <p className="text-[10px] text-muted uppercase tracking-wider">Avg wait</p>
-            </div>
-          </div>
-
           <div className="mt-4 flex items-center gap-1 text-xs text-muted group-hover:text-accent transition-colors">
-            View branch
+            Manage branch
             <ArrowRight className="h-3 w-3" />
           </div>
         </Link>

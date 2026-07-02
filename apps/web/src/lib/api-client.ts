@@ -1,12 +1,15 @@
 import type {
   AuthMeResponse,
+  Branch,
+  CreateBranchRequest,
   LoginRequest,
   RegisterRequest,
+  UpdateBranchRequest,
 } from "@queueflow/shared";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
-export type { AuthMeResponse };
+export type { AuthMeResponse, Branch };
 
 async function parseError(res: Response): Promise<string> {
   const body = await res.json().catch(() => ({}));
@@ -56,4 +59,28 @@ export function getMe() {
 
 export function logout() {
   return apiFetch<{ message: string }>("/auth/logout", { method: "POST" });
+}
+
+export function getBranches() {
+  return apiFetch<Branch[]>("/branches");
+}
+
+export function createBranch(payload: CreateBranchRequest) {
+  return apiFetch<Branch>("/branches", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function updateBranch(id: string, payload: UpdateBranchRequest) {
+  return apiFetch<Branch>(`/branches/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function deleteBranch(id: string) {
+  return apiFetch<{ message: string }>(`/branches/${id}`, {
+    method: "DELETE",
+  });
 }
