@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# QueueFlow Monorepo
 
-## Getting Started
+A queue management SaaS platform with a Next.js landing page and NestJS API backed by PostgreSQL.
 
-First, run the development server:
+## Structure
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+queueflow/
+├── apps/
+│   ├── web/          # Next.js 16 landing page
+│   └── api/          # NestJS REST API
+├── packages/
+│   └── shared/       # Shared TypeScript types (placeholder)
+└── docker-compose.yml
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Prerequisites
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Node.js 20+
+- Docker (for PostgreSQL)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Quick start
 
-## Learn More
+```bash
+npm install
+npm run db:up
+cp apps/api/.env.example apps/api/.env
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+- **Web:** http://localhost:3000
+- **API:** http://localhost:3001/api/health
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## API endpoints
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/health` | Health check |
 
-## Deploy on Vercel
+## Scripts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start web + API concurrently |
+| `npm run dev:web` | Start Next.js only |
+| `npm run dev:api` | Start NestJS only |
+| `npm run build` | Build API and web |
+| `npm run db:up` | Start Postgres via Docker |
+| `npm run db:down` | Stop Postgres |
