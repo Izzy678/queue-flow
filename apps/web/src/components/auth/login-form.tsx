@@ -1,17 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { login } from "@/lib/api-client";
+import { useAuth } from "@/lib/auth-context";
 import { cn } from "@/lib/utils";
 
 export function LoginForm({ className }: { className?: string }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { setAuth } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -23,8 +27,10 @@ export function LoginForm({ className }: { className?: string }) {
     setError(null);
 
     try {
-      await login(email, password);
-      router.push("/dashboard");
+      const auth = await login(email, password);
+      setAuth(auth);
+      const redirect = searchParams.get("redirect") ?? "/dashboard";
+      router.push(redirect);
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Sign in failed");
@@ -58,9 +64,8 @@ export function LoginForm({ className }: { className?: string }) {
             Forgot password?
           </button>
         </div>
-        <Input
+        <PasswordInput
           id="password"
-          type="password"
           placeholder="••••••••"
           autoComplete="current-password"
           value={password}

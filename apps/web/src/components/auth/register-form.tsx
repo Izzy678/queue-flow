@@ -6,12 +6,15 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { register } from "@/lib/api-client";
+import { useAuth } from "@/lib/auth-context";
 import { cn } from "@/lib/utils";
 
 export function RegisterForm({ className }: { className?: string }) {
   const router = useRouter();
+  const { setAuth } = useAuth();
   const [name, setName] = useState("");
   const [businessName, setBusinessName] = useState("");
   const [email, setEmail] = useState("");
@@ -26,13 +29,14 @@ export function RegisterForm({ className }: { className?: string }) {
     setError(null);
 
     try {
-      await register({
+      const auth = await register({
         email,
         password,
         name,
         businessName,
         locationCount,
       });
+      setAuth(auth);
       router.push("/dashboard");
       router.refresh();
     } catch (err) {
@@ -107,9 +111,8 @@ export function RegisterForm({ className }: { className?: string }) {
 
       <div className="space-y-2">
         <Label htmlFor="password">Password</Label>
-        <Input
+        <PasswordInput
           id="password"
-          type="password"
           placeholder="At least 8 characters"
           autoComplete="new-password"
           value={password}

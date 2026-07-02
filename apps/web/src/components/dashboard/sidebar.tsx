@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   Building2,
@@ -11,7 +10,7 @@ import {
   LogOut,
   ChevronRight,
 } from "lucide-react";
-import { logout, getMe, type AuthMeResponse } from "@/lib/api-client";
+import { useAuth } from "@/lib/auth-context";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -24,21 +23,12 @@ const navItems = [
 export function DashboardSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const [auth, setAuth] = useState<AuthMeResponse | null>(null);
-
-  useEffect(() => {
-    getMe()
-      .then(setAuth)
-      .catch(() => setAuth(null));
-  }, []);
+  const { auth, signOut } = useAuth();
 
   const handleLogout = async () => {
-    try {
-      await logout();
-    } finally {
-      router.push("/login");
-      router.refresh();
-    }
+    await signOut();
+    router.push("/login");
+    router.refresh();
   };
 
   return (
