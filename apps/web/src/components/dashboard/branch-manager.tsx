@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Building2, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { Building2, Loader2, Monitor, Pencil, Plus, Trash2 } from "lucide-react";
 import type { Branch } from "@queueflow/shared";
 import { BranchStatus, UserRole } from "@queueflow/shared";
 import {
@@ -252,8 +253,16 @@ export function BranchManager() {
                 )}
               </div>
 
-              {canManage && editingId !== branch.id && (
-                <div className="flex shrink-0 flex-wrap gap-2">
+              <div className="flex shrink-0 flex-wrap gap-2">
+                <Link href={`/dashboard/branches/${branch.id}/display`}>
+                  <Button size="sm" variant="gradient">
+                    <Monitor className="h-3.5 w-3.5" />
+                    Lobby display
+                  </Button>
+                </Link>
+
+                {canManage && editingId !== branch.id && (
+                  <>
                   <Button
                     size="sm"
                     variant="outline"
@@ -287,8 +296,9 @@ export function BranchManager() {
                     <Trash2 className="h-3.5 w-3.5" />
                     Delete
                   </Button>
-                </div>
-              )}
+                  </>
+                )}
+              </div>
             </div>
           ))}
         </div>
