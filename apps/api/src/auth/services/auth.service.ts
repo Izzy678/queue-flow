@@ -60,9 +60,11 @@ export class AuthService {
       });
       await manager.save(user);
 
+      const branchSlug = await this.generateUniqueBranchSlug(tenant.id, "Main");
       const branch = manager.create(Branch, {
         tenantId: tenant.id,
-        name: tenantType === TenantType.STANDALONE_LOCATION ? "Main" : "Main",
+        name: "Main",
+        slug: branchSlug,
         status: BranchStatus.ACTIVE,
       });
       await manager.save(branch);
@@ -125,6 +127,7 @@ export class AuthService {
       branches: branches.map((b) => ({
         id: b.id,
         name: b.name,
+        slug: b.slug,
         status: b.status,
       })),
     };
@@ -143,6 +146,31 @@ export class AuthService {
 
     while (
       await this.tenantsRepository.findOne({ where: { slug } })
+    ) {
+      attempt += 1;
+      slug = `${base}-${attempt}`;
+    }
+
+    return slug;
+  }
+
+  private async generateUniqueBranchSlug(
+    tenantId: string,
+    name: string
+  ): Promise<string> {
+    const base =
+      name
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "")
+        .slice(0, 48) || "branch";
+
+    let slug = base;
+    let attempt = 0;
+
+    while (
+      await this.branchesRepository.findOne({ where: { tenantId, slug } })
     ) {
       attempt += 1;
       slug = `${base}-${attempt}`;

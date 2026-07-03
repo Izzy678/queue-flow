@@ -1,14 +1,28 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { BranchesService } from "./service/branches.service";
+import { Tenant } from "src/tenants/tenant.entity";
+import { Queue } from "src/queues/entity/queue.entity";
+import { Ticket } from "src/queues/entity/ticket.entity";
 import { RolesGuard } from "src/auth/guards/roles.guard";
 import { BranchesController } from "./controller/branches.controller";
+import { PublicBranchesController } from "./controller/public-branches.controller";
+import { BranchJoinToken } from "./entity/branch-join-token.entity";
 import { Branch } from "./entity/branch.entity";
+import { BranchesService } from "./service/branches.service";
+import { BranchSlugService } from "./service/branch-slug.service";
+import { JoinTokenService } from "./service/join-token.service";
+import { PublicBranchService } from "./service/public-branch.service";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Branch])],
-  controllers: [BranchesController],
-  providers: [BranchesService, RolesGuard],
-  exports: [BranchesService],
+  imports: [TypeOrmModule.forFeature([Branch, BranchJoinToken, Tenant, Queue, Ticket])],
+  controllers: [BranchesController, PublicBranchesController],
+  providers: [
+    BranchesService,
+    BranchSlugService,
+    JoinTokenService,
+    PublicBranchService,
+    RolesGuard,
+  ],
+  exports: [BranchesService, JoinTokenService, PublicBranchService],
 })
 export class BranchesModule {}

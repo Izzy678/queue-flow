@@ -5,6 +5,7 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn,
 } from "typeorm";
 import { Tenant } from "../../tenants/tenant.entity";
@@ -15,6 +16,7 @@ export enum BranchStatus {
 }
 
 @Entity("branches")
+@Unique(["tenantId", "slug"])
 export class Branch {
   @PrimaryGeneratedColumn("uuid")
   id!: string;
@@ -28,6 +30,9 @@ export class Branch {
 
   @Column()
   name!: string;
+
+  @Column({ type: "varchar", nullable: true })
+  slug!: string | null;
 
   @Column({ type: "enum", enum: BranchStatus, default: BranchStatus.ACTIVE })
   status!: BranchStatus;

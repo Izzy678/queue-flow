@@ -4,6 +4,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { AuthModule } from "./auth/auth.module";
 import { BranchesModule } from "./branches/branches.module";
 import { HealthModule } from "./health/health.module";
+import { QueuesModule } from "./queues/queues.module";
 import { TenantsModule } from "./tenants/tenants.module";
 import { UsersModule } from "./users/users.module";
 
@@ -29,6 +30,7 @@ import { UsersModule } from "./users/users.module";
     BranchesModule,
     TenantsModule,
     UsersModule,
+    QueuesModule,
   ],
 })
 export class AppModule {}
