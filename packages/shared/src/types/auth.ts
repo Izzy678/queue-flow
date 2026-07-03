@@ -42,6 +42,7 @@ export interface AuthTenant {
 export interface AuthBranch {
   id: string;
   name: string;
+  slug: string;
   status: string;
 }
 

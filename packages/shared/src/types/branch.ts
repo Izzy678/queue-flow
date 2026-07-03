@@ -7,6 +7,7 @@ export interface Branch {
   id: string;
   tenantId: string;
   name: string;
+  slug: string;
   status: BranchStatus;
   createdAt: string;
   updatedAt: string;

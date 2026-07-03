@@ -27,3 +27,26 @@ export {
   type CreateTeamMemberRequest,
   type UpdateTeamMemberRequest,
 } from "./types/team";
+
+export {
+  QueueStatus,
+  type Queue,
+  type CreateQueueRequest,
+  type UpdateQueueRequest,
+  type QueueBoard,
+  type PublicQueueInfo,
+  type DashboardStats,
+} from "./types/queue";
+
+export {
+  TicketStatus,
+  type Ticket,
+  type JoinQueueRequest,
+  type PublicTicketStatus,
+} from "./types/ticket";
+
+export {
+  type BranchJoinToken,
+  type PublicBranchLanding,
+  type PublicBranchQueue,
+} from "./types/join-token";
