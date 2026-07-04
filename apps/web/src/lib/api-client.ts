@@ -1,4 +1,5 @@
 import type {
+  AnalyticsReport,
   AuthMeResponse,
   Branch,
   BranchJoinToken,
@@ -153,6 +154,21 @@ export function deleteTeamMember(id: string) {
 
 export function getDashboardStats() {
   return apiFetch<DashboardStats>("/queues/dashboard/stats");
+}
+
+export function getAnalytics(params: {
+  from?: string;
+  to?: string;
+  branchId?: string;
+}) {
+  const search = new URLSearchParams();
+  if (params.from) search.set("from", params.from);
+  if (params.to) search.set("to", params.to);
+  if (params.branchId) search.set("branchId", params.branchId);
+  const query = search.toString();
+  return apiFetch<AnalyticsReport>(
+    `/queues/analytics${query ? `?${query}` : ""}`
+  );
 }
 
 export function getQueues(branchId?: string) {
