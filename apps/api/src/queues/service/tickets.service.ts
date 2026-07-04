@@ -231,6 +231,123 @@ export class TicketsService {
     };
   }
 
+  async getAnalytics(
+    tenantId: string,
+    options: {
+      from?: string;
+      to?: string;
+      branchId?: string;
+      branchIds?: string[];
+    }
+  ) {
+    const { from, to, branchId, branchIds } = options;
+    const range = this.resolveDateRange(from, to);
+    const scopeIds = branchIds ?? (branchId ? [branchId] : null);
+
+    const tickets = await this.ticketsRepository.find({
+      where: this.buildTicketScopeWhere(tenantId, scopeIds, {
+        completedAt: Between(range.from, range.to),
+        status: In([
+          TicketStatus.COMPLETED,
+          TicketStatus.NO_SHOW,
+          TicketStatus.CANCELLED,
+        ]),
+      }),
+      relations: { queue: true, branch: true },
+    });
+
+    const completed = tickets.filter((t) => t.status === TicketStatus.COMPLETED);
+    const noShows = tickets.filter((t) => t.status === TicketStatus.NO_SHOW);
+    const cancelled = tickets.filter((t) => t.status === TicketStatus.CANCELLED);
+
+    const avgWaitMinutes = this.averageWaitMinutes(completed);
+
+    const branchMap = new Map<
+      string,
+      { branchName: string; completed: Ticket[]; noShows: number }
+    >();
+    const queueMap = new Map<
+      string,
+      {
+        queueName: string;
+        branchId: string;
+        branchName: string;
+        completed: Ticket[];
+        noShows: number;
+      }
+    >();
+
+    for (const ticket of tickets) {
+      if (
+        ticket.status !== TicketStatus.COMPLETED &&
+        ticket.status !== TicketStatus.NO_SHOW
+      ) {
+        continue;
+      }
+
+      const branchEntry = branchMap.get(ticket.branchId) ?? {
+        branchName: ticket.branch?.name ?? "",
+        completed: [],
+        noShows: 0,
+      };
+
+      if (ticket.status === TicketStatus.COMPLETED) {
+        branchEntry.completed.push(ticket);
+      } else {
+        branchEntry.noShows += 1;
+      }
+      branchMap.set(ticket.branchId, branchEntry);
+
+      const queueEntry = queueMap.get(ticket.queueId) ?? {
+        queueName: ticket.queue?.name ?? "",
+        branchId: ticket.branchId,
+        branchName: ticket.branch?.name ?? "",
+        completed: [],
+        noShows: 0,
+      };
+
+      if (ticket.status === TicketStatus.COMPLETED) {
+        queueEntry.completed.push(ticket);
+      } else {
+        queueEntry.noShows += 1;
+      }
+      queueMap.set(ticket.queueId, queueEntry);
+    }
+
+    const byBranch = [...branchMap.entries()]
+      .map(([id, entry]) => ({
+        branchId: id,
+        branchName: entry.branchName,
+        ticketsServed: entry.completed.length,
+        noShows: entry.noShows,
+        avgWaitMinutes: this.averageWaitMinutes(entry.completed),
+      }))
+      .sort((a, b) => b.ticketsServed - a.ticketsServed);
+
+    const byQueue = [...queueMap.entries()]
+      .map(([id, entry]) => ({
+        queueId: id,
+        queueName: entry.queueName,
+        branchId: entry.branchId,
+        branchName: entry.branchName,
+        ticketsServed: entry.completed.length,
+        noShows: entry.noShows,
+        avgWaitMinutes: this.averageWaitMinutes(entry.completed),
+      }))
+      .sort((a, b) => b.ticketsServed - a.ticketsServed);
+
+    return {
+      from: range.from.toISOString(),
+      to: range.to.toISOString(),
+      ticketsServed: completed.length,
+      noShows: noShows.length,
+      cancelled: cancelled.length,
+      avgWaitMinutes,
+      byBranch,
+      byQueue,
+    };
+  }
+
   private async createTicket(queue: Queue, dto: JoinQueueDto) {
     return this.dataSource.transaction(async (manager) => {
       const lockedQueue = await manager.findOne(Queue, {
@@ -372,6 +489,27 @@ export class TicketsService {
 
     if (waits.length === 0) return null;
     return Math.round(waits.reduce((a, b) => a + b, 0) / waits.length);
+  }
+
+  private resolveDateRange(from?: string, to?: string) {
+    const end = to ? new Date(to) : new Date();
+    end.setHours(23, 59, 59, 999);
+
+    const start = from ? new Date(from) : new Date(end);
+    if (!from) {
+      start.setDate(start.getDate() - 6);
+    }
+    start.setHours(0, 0, 0, 0);
+
+    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+      throw new BadRequestException("Invalid date range");
+    }
+
+    if (start > end) {
+      throw new BadRequestException("Start date must be before end date");
+    }
+
+    return { from: start, to: end };
   }
 
   private buildTicketScopeWhere(

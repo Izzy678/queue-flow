@@ -35,6 +35,23 @@ export class QueuesController {
     );
   }
 
+  @Get("analytics")
+  getAnalytics(
+    @CurrentUser() user: User,
+    @Query("from") from?: string,
+    @Query("to") to?: string,
+    @Query("branchId") branchId?: string
+  ) {
+    if (branchId) assertBranchAccess(user, branchId);
+
+    return this.ticketsService.getAnalytics(user.tenantId, {
+      from,
+      to,
+      branchId,
+      branchIds: branchId ? undefined : getUserBranchIds(user) ?? undefined,
+    });
+  }
+
   @Get()
   findAll(@CurrentUser() user: User, @Query("branchId") branchId?: string) {
     if (branchId) assertBranchAccess(user, branchId);
