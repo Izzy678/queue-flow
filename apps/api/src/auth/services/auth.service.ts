@@ -10,6 +10,7 @@ import { Branch, BranchStatus } from "../../branches/entity/branch.entity";
 import { Tenant, TenantType } from "../../tenants/tenant.entity";
 import { User, UserRole } from "../../users/user.entity";
 import { RegisterDto } from "../dto/auth.dto";
+import { getUserBranchIds } from "../utils/branch-acess";
 
 const SALT_ROUNDS = 10;
 
@@ -101,10 +102,15 @@ export class AuthService {
       throw new UnauthorizedException("Tenant not found");
     }
 
-    const branches = await this.branchesRepository.find({
+    const allBranches = await this.branchesRepository.find({
       where: { tenantId: tenant.id },
       order: { createdAt: "ASC" },
     });
+
+    const allowed = getUserBranchIds(user);
+    const branches = allowed
+      ? allBranches.filter((branch) => allowed.includes(branch.id))
+      : allBranches;
 
     return this.buildAuthResponse(user, tenant, branches);
   }
