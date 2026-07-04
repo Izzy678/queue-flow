@@ -50,3 +50,9 @@ export {
   type PublicBranchLanding,
   type PublicBranchQueue,
 } from "./types/join-token";
+
+export {
+  type AnalyticsReport,
+  type AnalyticsBranchBreakdown,
+  type AnalyticsQueueBreakdown,
+} from "./types/analytics";
