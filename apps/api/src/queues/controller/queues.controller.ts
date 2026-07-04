@@ -17,6 +17,7 @@ import { User, UserRole } from "src/users/user.entity";
 import { CreateQueueDto, UpdateQueueDto } from "../dto/queue.dto";
 import { QueuesService } from "../service/queues.service";
 import { TicketsService } from "../service/tickets.service";
+import { assertBranchAccess, getUserBranchIds } from "../../auth/utils/branch-acess";
 
 @Controller("queues")
 @UseGuards(SessionGuard)
@@ -33,7 +34,13 @@ export class QueuesController {
 
   @Get()
   findAll(@CurrentUser() user: User, @Query("branchId") branchId?: string) {
-    return this.queuesService.findAll(user.tenantId, branchId);
+    if (branchId) assertBranchAccess(user, branchId);
+
+    return this.queuesService.findAll(
+      user.tenantId,
+      branchId,
+      getUserBranchIds(user)
+    );
   }
 
   @Get(":id/board")

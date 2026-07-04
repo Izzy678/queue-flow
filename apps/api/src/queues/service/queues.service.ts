@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { In, Repository } from "typeorm";
 import { Branch } from "src/branches/entity/branch.entity";
 import { Queue, QueueStatus } from "../entity/queue.entity";
 import { Ticket, TicketStatus } from "../entity/ticket.entity";
@@ -21,9 +21,23 @@ export class QueuesService {
     private readonly ticketsRepository: Repository<Ticket>
   ) {}
 
-  async findAll(tenantId: string, branchId?: string) {
+  async findAll(
+    tenantId: string,
+    branchId?: string,
+    allowedBranchIds?: string[] | null
+  ) {
+    let where: { tenantId: string; branchId?: string | ReturnType<typeof In> };
+
+    if (branchId) {
+      where = { tenantId, branchId };
+    } else if (allowedBranchIds?.length) {
+      where = { tenantId, branchId: In(allowedBranchIds) };
+    } else {
+      where = { tenantId };
+    }
+
     const queues = await this.queuesRepository.find({
-      where: branchId ? { tenantId, branchId } : { tenantId },
+      where,
       relations: { branch: true },
       order: { createdAt: "ASC" },
     });
