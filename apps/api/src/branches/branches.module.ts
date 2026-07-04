@@ -1,9 +1,9 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { Tenant } from "src/tenants/tenant.entity";
-import { Queue } from "src/queues/entity/queue.entity";
-import { Ticket } from "src/queues/entity/ticket.entity";
-import { RolesGuard } from "src/auth/guards/roles.guard";
+import { Tenant } from "../tenants/tenant.entity";
+import { Queue } from "../queues/entity/queue.entity";
+import { Ticket } from "../queues/entity/ticket.entity";
+import { RolesGuard } from "../auth/guards/roles.guard";
 import { BranchesController } from "./controller/branches.controller";
 import { PublicBranchesController } from "./controller/public-branches.controller";
 import { BranchJoinToken } from "./entity/branch-join-token.entity";

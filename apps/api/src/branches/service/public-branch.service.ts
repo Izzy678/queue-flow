@@ -5,9 +5,9 @@ import {
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Tenant } from "src/tenants/tenant.entity";
-import { Queue, QueueStatus } from "src/queues/entity/queue.entity";
-import { Ticket, TicketStatus } from "src/queues/entity/ticket.entity";
+import { Tenant } from "../../tenants/tenant.entity";
+import { Queue, QueueStatus } from "../../queues/entity/queue.entity";
+import { Ticket, TicketStatus } from "../../queues/entity/ticket.entity";
 import { Branch, BranchStatus } from "../entity/branch.entity";
 import { JoinTokenService } from "./join-token.service";
 
