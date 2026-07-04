@@ -1,5 +1,5 @@
 import { ForbiddenException } from "@nestjs/common";
-import { User } from "src/users/user.entity";
+import { User } from "../../users/user.entity";
 
 export function assertBranchAccess(user: User, branchId: string): void {
   if (user.branchIds?.length && !user.branchIds.includes(branchId)) {
