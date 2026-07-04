@@ -268,7 +268,7 @@ export class TicketsService {
     });
   }
 
-  private async getTicketOrThrow(tenantId: string, ticketId: string) {
+  async getTicketOrThrow(tenantId: string, ticketId: string) {
     const ticket = await this.ticketsRepository.findOne({
       where: { id: ticketId, tenantId },
       relations: { queue: true, branch: true },
