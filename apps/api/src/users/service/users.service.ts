@@ -8,7 +8,7 @@ import {
 import { InjectRepository } from "@nestjs/typeorm";
 import * as bcrypt from "bcrypt";
 import { In, Repository } from "typeorm";
-import { Branch } from "src/branches/entity/branch.entity";
+import { Branch } from "../../branches/entity/branch.entity";
 import { User, UserRole } from "../user.entity";
 import { CreateTeamMemberDto, UpdateTeamMemberDto } from "../dto/user.dto";
 
