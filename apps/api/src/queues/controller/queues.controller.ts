@@ -9,11 +9,11 @@ import {
   Query,
   UseGuards,
 } from "@nestjs/common";
-import { CurrentUser } from "src/auth/decorators/current-user.decorator";
-import { Roles } from "src/auth/decorators/roles.decorator";
-import { RolesGuard } from "src/auth/guards/roles.guard";
-import { SessionGuard } from "src/auth/guards/session.guard";
-import { User, UserRole } from "src/users/user.entity";
+import { CurrentUser } from "../../auth/decorators/current-user.decorator";
+import { Roles } from "../../auth/decorators/roles.decorator";
+import { RolesGuard } from "../../auth/guards/roles.guard";
+import { SessionGuard } from "../../auth/guards/session.guard";
+import { User, UserRole } from "../../users/user.entity";
 import { CreateQueueDto, UpdateQueueDto } from "../dto/queue.dto";
 import { QueuesService } from "../service/queues.service";
 import { TicketsService } from "../service/tickets.service";

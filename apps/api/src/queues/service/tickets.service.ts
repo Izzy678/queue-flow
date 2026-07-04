@@ -5,7 +5,7 @@ import {
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Between, DataSource, In, Repository } from "typeorm";
-import { PublicBranchService } from "src/branches/service/public-branch.service";
+import { PublicBranchService } from "../../branches/service/public-branch.service";
 import { Queue, QueueStatus } from "../entity/queue.entity";
 import { Ticket, TicketStatus } from "../entity/ticket.entity";
 import { JoinQueueDto } from "../dto/ticket.dto";

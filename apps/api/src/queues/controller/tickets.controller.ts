@@ -1,8 +1,8 @@
 import { Controller, Param, Post, UseGuards } from "@nestjs/common";
-import { CurrentUser } from "src/auth/decorators/current-user.decorator";
-import { SessionGuard } from "src/auth/guards/session.guard";
-import { assertBranchAccess } from "src/auth/utils/branch-acess";
-import { User } from "src/users/user.entity";
+import { CurrentUser } from "../../auth/decorators/current-user.decorator";
+import { SessionGuard } from "../../auth/guards/session.guard";
+import { assertBranchAccess } from "../../auth/utils/branch-acess";
+import { User } from "../../users/user.entity";
 import { TicketsService } from "../service/tickets.service";
 
 @Controller("tickets")
