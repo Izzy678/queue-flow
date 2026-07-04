@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Param,
   Patch,
@@ -17,6 +18,7 @@ import { User, UserRole } from "src/users/user.entity";
 import { CreateBranchDto, UpdateBranchDto } from "../dto/branch.dto";
 import { BranchesService } from "../service/branches.service";
 import { JoinTokenService } from "../service/join-token.service";
+import { assertBranchAccess, getUserBranchIds } from "src/auth/utils/branch-acess";
 
 @Controller("branches")
 @UseGuards(SessionGuard)
@@ -28,17 +30,23 @@ export class BranchesController {
   ) {}
 
   @Get()
-  findAll(@CurrentUser() user: User) {
-    return this.branchesService.findAll(user.tenantId);
+  async findAll(@CurrentUser() user: User) {
+    const branches = await this.branchesService.findAll(user.tenantId);
+    const allowed  =  getUserBranchIds(user);
+    return allowed
+      ? branches.filter((branch) => allowed.includes(branch.id))
+      : branches;
   }
 
   @Post(":id/join-token")
   createJoinToken(@CurrentUser() user: User, @Param("id") id: string) {
+    assertBranchAccess(user, id);
     return this.buildJoinTokenResponse(user.tenantId, id);
   }
 
   @Get(":id")
   findOne(@CurrentUser() user: User, @Param("id") id: string) {
+    assertBranchAccess(user, id);
     return this.branchesService.findOne(user.tenantId, id);
   }
 
