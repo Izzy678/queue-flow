@@ -25,7 +25,7 @@ export class QueuesController {
   constructor(
     private readonly queuesService: QueuesService,
     private readonly ticketsService: TicketsService
-  ) { }
+  ) {}
 
   @Get("dashboard/stats")
   getDashboardStats(@CurrentUser() user: User) {
@@ -47,12 +47,16 @@ export class QueuesController {
   }
 
   @Get(":id/board")
-  getBoard(@CurrentUser() user: User, @Param("id") id: string) {
+  async getBoard(@CurrentUser() user: User, @Param("id") id: string) {
+    const queue = await this.queuesService.getQueueOrThrow(user.tenantId, id);
+    assertBranchAccess(user, queue.branchId);
     return this.ticketsService.getBoard(user.tenantId, id);
   }
 
   @Get(":id")
-  findOne(@CurrentUser() user: User, @Param("id") id: string) {
+  async findOne(@CurrentUser() user: User, @Param("id") id: string) {
+    const queue = await this.queuesService.getQueueOrThrow(user.tenantId, id);
+    assertBranchAccess(user, queue.branchId);
     return this.queuesService.findOne(user.tenantId, id);
   }
 
@@ -60,29 +64,36 @@ export class QueuesController {
   @UseGuards(RolesGuard)
   @Roles(UserRole.OWNER, UserRole.ADMIN)
   create(@CurrentUser() user: User, @Body() dto: CreateQueueDto) {
+    assertBranchAccess(user, dto.branchId);
     return this.queuesService.create(user.tenantId, dto);
   }
 
   @Patch(":id")
   @UseGuards(RolesGuard)
   @Roles(UserRole.OWNER, UserRole.ADMIN)
-  update(
+  async update(
     @CurrentUser() user: User,
     @Param("id") id: string,
     @Body() dto: UpdateQueueDto
   ) {
+    const queue = await this.queuesService.getQueueOrThrow(user.tenantId, id);
+    assertBranchAccess(user, queue.branchId);
     return this.queuesService.update(user.tenantId, id, dto);
   }
 
   @Delete(":id")
   @UseGuards(RolesGuard)
   @Roles(UserRole.OWNER, UserRole.ADMIN)
-  remove(@CurrentUser() user: User, @Param("id") id: string) {
+  async remove(@CurrentUser() user: User, @Param("id") id: string) {
+    const queue = await this.queuesService.getQueueOrThrow(user.tenantId, id);
+    assertBranchAccess(user, queue.branchId);
     return this.queuesService.remove(user.tenantId, id);
   }
 
   @Post(":id/call-next")
-  callNext(@CurrentUser() user: User, @Param("id") id: string) {
+  async callNext(@CurrentUser() user: User, @Param("id") id: string) {
+    const queue = await this.queuesService.getQueueOrThrow(user.tenantId, id);
+    assertBranchAccess(user, queue.branchId);
     return this.ticketsService.callNext(user.tenantId, id);
   }
 }
