@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { RolesGuard } from "src/auth/guards/roles.guard";
+import { RolesGuard } from "../auth/guards/roles.guard";
 import { Tenant } from "./tenant.entity";
 import { TenantController } from "./controller/tenant.controller";
 import { TenantService } from "./service/tenant.service";
