@@ -166,38 +166,55 @@ export class TicketsService {
     return this.toResponse(saved);
   }
 
-  async getDashboardStats(tenantId: string) {
+  async getDashboardStats(
+    tenantId: string,
+    allowedBranchIds?: string[] | null
+  ) {
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
 
-    const queues = await this.queuesService.findAll(tenantId);
+    const queues = await this.queuesService.findAll(
+      tenantId,
+      undefined,
+      allowedBranchIds
+    );
     const activeQueues = queues.filter((q) => q.status === QueueStatus.ACTIVE);
 
     const waitingCount = activeQueues.reduce((sum, q) => sum + q.waitingCount, 0);
     const servingCount = activeQueues.reduce((sum, q) => sum + q.servingCount, 0);
 
+    const servedTodayWhere = this.buildTicketScopeWhere(tenantId, allowedBranchIds, {
+      status: TicketStatus.COMPLETED,
+      completedAt: Between(startOfDay, new Date()),
+    });
+
     const servedToday = await this.ticketsRepository.count({
-      where: {
-        tenantId,
-        status: TicketStatus.COMPLETED,
-        completedAt: Between(startOfDay, new Date()),
-      },
+      where: servedTodayWhere,
+    });
+
+    const currentServingWhere = this.buildTicketScopeWhere(tenantId, allowedBranchIds, {
+      status: TicketStatus.SERVING,
     });
 
     const currentServing = await this.ticketsRepository.findOne({
-      where: { tenantId, status: TicketStatus.SERVING },
+      where: currentServingWhere,
       order: { servingAt: "DESC" },
     });
 
+    const recentWhere = this.buildTicketScopeWhere(tenantId, allowedBranchIds);
     const recentTickets = await this.ticketsRepository.find({
-      where: { tenantId },
+      where: recentWhere,
       relations: { queue: true, branch: true },
       order: { updatedAt: "DESC" },
       take: 10,
     });
 
-    const avgWaitMinutes = await this.calculateAvgWaitMinutes(tenantId, startOfDay);
-    const throughput = await this.getHourlyThroughput(tenantId);
+    const avgWaitMinutes = await this.calculateAvgWaitMinutes(
+      tenantId,
+      startOfDay,
+      allowedBranchIds
+    );
+    const throughput = await this.getHourlyThroughput(tenantId, allowedBranchIds);
 
     return {
       activeQueues: activeQueues.length,
@@ -300,24 +317,25 @@ export class TicketsService {
     });
   }
 
-  private async calculateAvgWaitMinutes(tenantId: string, startOfDay: Date) {
+  private async calculateAvgWaitMinutes(
+    tenantId: string,
+    startOfDay: Date,
+    allowedBranchIds?: string[] | null
+  ) {
     const tickets = await this.ticketsRepository.find({
-      where: {
-        tenantId,
+      where: this.buildTicketScopeWhere(tenantId, allowedBranchIds, {
         status: TicketStatus.COMPLETED,
         completedAt: Between(startOfDay, new Date()),
-      },
+      }),
     });
 
-    const waits = tickets
-      .filter((t) => t.servingAt)
-      .map((t) => (t.servingAt!.getTime() - t.createdAt.getTime()) / 60000);
-
-    if (waits.length === 0) return null;
-    return Math.round(waits.reduce((a, b) => a + b, 0) / waits.length);
+    return this.averageWaitMinutes(tickets);
   }
 
-  private async getHourlyThroughput(tenantId: string) {
+  private async getHourlyThroughput(
+    tenantId: string,
+    allowedBranchIds?: string[] | null
+  ) {
     const now = new Date();
     const hours: number[] = [];
 
@@ -330,11 +348,10 @@ export class TicketsService {
       hourEnd.setHours(hourStart.getHours() + 1);
 
       const count = await this.ticketsRepository.count({
-        where: {
-          tenantId,
+        where: this.buildTicketScopeWhere(tenantId, allowedBranchIds, {
           status: TicketStatus.COMPLETED,
           completedAt: Between(hourStart, hourEnd),
-        },
+        }),
       });
 
       hours.push(count);
@@ -346,6 +363,27 @@ export class TicketsService {
   private getWaitMinutes(ticket: Ticket) {
     const end = ticket.servingAt ?? new Date();
     return Math.max(0, Math.round((end.getTime() - ticket.createdAt.getTime()) / 60000));
+  }
+
+  private averageWaitMinutes(tickets: Ticket[]) {
+    const waits = tickets
+      .filter((t) => t.servingAt)
+      .map((t) => (t.servingAt!.getTime() - t.createdAt.getTime()) / 60000);
+
+    if (waits.length === 0) return null;
+    return Math.round(waits.reduce((a, b) => a + b, 0) / waits.length);
+  }
+
+  private buildTicketScopeWhere(
+    tenantId: string,
+    allowedBranchIds?: string[] | null,
+    extra: Record<string, unknown> = {}
+  ) {
+    if (allowedBranchIds?.length) {
+      return { tenantId, branchId: In(allowedBranchIds), ...extra };
+    }
+
+    return { tenantId, ...extra };
   }
 
   private async toResponse(ticket: Ticket) {

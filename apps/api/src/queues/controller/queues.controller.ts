@@ -29,7 +29,10 @@ export class QueuesController {
 
   @Get("dashboard/stats")
   getDashboardStats(@CurrentUser() user: User) {
-    return this.ticketsService.getDashboardStats(user.tenantId);
+    return this.ticketsService.getDashboardStats(
+      user.tenantId,
+      getUserBranchIds(user)
+    );
   }
 
   @Get()
