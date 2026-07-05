@@ -51,6 +51,9 @@ export class Ticket {
   customerName!: string;
 
   @Column({ type: "varchar", nullable: true })
+  customerEmail!: string | null;
+
+  @Column({ type: "varchar", nullable: true })
   customerPhone!: string | null;
 
   @Column({ type: "enum", enum: TicketStatus, default: TicketStatus.WAITING })
