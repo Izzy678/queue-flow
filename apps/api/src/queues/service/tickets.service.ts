@@ -349,6 +349,9 @@ export class TicketsService {
   }
 
   private async createTicket(queue: Queue, dto: JoinQueueDto) {
+    const customerEmail = dto.customerEmail.toLowerCase().trim();
+    const customerPhone = dto.customerPhone?.trim() || null;
+
     return this.dataSource.transaction(async (manager) => {
       const lockedQueue = await manager.findOne(Queue, {
         where: { id: queue.id },
@@ -371,7 +374,8 @@ export class TicketsService {
         ticketNumber,
         sequenceNumber: lockedQueue.ticketCounter,
         customerName: dto.customerName.trim(),
-        customerPhone: dto.customerPhone?.trim() || null,
+        customerEmail,
+        customerPhone,
         status: TicketStatus.WAITING,
         calledAt: null,
         servingAt: null,
@@ -536,6 +540,7 @@ export class TicketsService {
       branchName: ticket.branch?.name ?? "",
       ticketNumber: ticket.ticketNumber,
       customerName: ticket.customerName,
+      customerEmail: ticket.customerEmail,
       customerPhone: ticket.customerPhone,
       status: ticket.status,
       position,
