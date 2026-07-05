@@ -4,9 +4,11 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Between, Brackets, DataSource, In, Repository } from "typeorm";
 import { PublicBranchService } from "../../branches/service/public-branch.service";
+import { NotificationService } from "../../notifications/notification.service";
 import { Queue, QueueStatus } from "../entity/queue.entity";
 import { Ticket, TicketStatus } from "../entity/ticket.entity";
 import { JoinQueueDto } from "../dto/ticket.dto";
@@ -18,6 +20,8 @@ export class TicketsService {
     private readonly dataSource: DataSource,
     private readonly queuesService: QueuesService,
     private readonly publicBranchService: PublicBranchService,
+    private readonly notifications: NotificationService,
+    private readonly configService: ConfigService,
     @InjectRepository(Ticket)
     private readonly ticketsRepository: Repository<Ticket>,
     @InjectRepository(Queue)
@@ -39,7 +43,18 @@ export class TicketsService {
       throw new NotFoundException("Queue not available");
     }
 
-    return this.createTicket(queue, dto);
+    const ticket = await this.createTicket(queue, dto);
+
+    this.notifications.sendTicketJoined({
+      customerEmail: ticket.customerEmail!,
+      customerName: ticket.customerName,
+      ticketNumber: ticket.ticketNumber,
+      queueName: ticket.queueName,
+      branchName: ticket.branchName,
+      trackUrl: this.buildTrackUrl(ticket.id),
+    });
+
+    return ticket;
   }
 
   async getPublicTicket(ticketId: string) {
@@ -347,6 +362,12 @@ export class TicketsService {
       byBranch,
       byQueue,
     };
+  }
+
+  private buildTrackUrl(ticketId: string) {
+    const webUrl =
+      this.configService.get<string>("WEB_URL") ?? "http://localhost:3000";
+    return `${webUrl}/ticket/${ticketId}`;
   }
 
   private async createTicket(queue: Queue, dto: JoinQueueDto) {
