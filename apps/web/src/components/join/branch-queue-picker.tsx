@@ -29,6 +29,7 @@ export function BranchQueuePicker({
   const [selectedQueueId, setSelectedQueueId] = useState<string | null>(null);
   const [ticket, setTicket] = useState<PublicTicketStatus | null>(null);
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -86,6 +87,7 @@ export function BranchQueuePicker({
     try {
       const created = await joinPublicQueue(selectedQueueId, {
         customerName: name.trim(),
+        customerEmail: email.trim(),
         customerPhone: phone.trim() || undefined,
         joinToken: token,
       });
@@ -197,6 +199,16 @@ export function BranchQueuePicker({
                     onChange={(e) => setName(e.target.value)}
                     required
                     autoFocus
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="customer-email">Email</Label>
+                  <Input
+                    id="customer-email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
                   />
                 </div>
                 <div className="space-y-2">
