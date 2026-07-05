@@ -1,10 +1,11 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Between, DataSource, In, Repository } from "typeorm";
+import { Between, Brackets, DataSource, In, Repository } from "typeorm";
 import { PublicBranchService } from "../../branches/service/public-branch.service";
 import { Queue, QueueStatus } from "../entity/queue.entity";
 import { Ticket, TicketStatus } from "../entity/ticket.entity";
@@ -351,6 +352,11 @@ export class TicketsService {
   private async createTicket(queue: Queue, dto: JoinQueueDto) {
     const customerEmail = dto.customerEmail.toLowerCase().trim();
     const customerPhone = dto.customerPhone?.trim() || null;
+    const activeStatuses = [
+      TicketStatus.WAITING,
+      TicketStatus.CALLED,
+      TicketStatus.SERVING,
+    ];
 
     return this.dataSource.transaction(async (manager) => {
       const lockedQueue = await manager.findOne(Queue, {
@@ -360,6 +366,28 @@ export class TicketsService {
 
       if (!lockedQueue || lockedQueue.status !== QueueStatus.ACTIVE) {
         throw new NotFoundException("Queue not available");
+      }
+
+      const existing = await manager
+        .createQueryBuilder(Ticket, "ticket")
+        .where("ticket.queueId = :queueId", { queueId: queue.id })
+        .andWhere("ticket.status IN (:...statuses)", { statuses: activeStatuses })
+        .andWhere(
+          new Brackets((qb) => {
+            qb.where("ticket.customerEmail = :email", { email: customerEmail });
+            if (customerPhone) {
+              qb.orWhere("ticket.customerPhone = :phone", {
+                phone: customerPhone,
+              });
+            }
+          })
+        )
+        .getOne();
+
+      if (existing) {
+        throw new ConflictException(
+          `You already have ticket ${existing.ticketNumber} in this queue.`
+        );
       }
 
       lockedQueue.ticketCounter += 1;
