@@ -43,9 +43,9 @@ export const features: {
   },
   {
     icon: Bell,
-    title: "SMS & email notifications",
+    title: "Email notifications (SMS coming soon)",
     description:
-      "Automated alerts when it's almost their turn, so customers can wait remotely with confidence.",
+      "Automated email alerts when customers join, when it's almost their turn, and when they're called — SMS support planned.",
   },
   {
     icon: Building2,
@@ -84,7 +84,7 @@ export const howItWorksSteps = [
     step: "03",
     title: "Receive Notification",
     description:
-      "An SMS or push notification alerts them when they're next, so they arrive just in time.",
+      "Email alerts when they're almost up and when it's their turn, so they arrive at the counter just in time.",
   },
   {
     step: "04",
@@ -140,7 +140,7 @@ export const testimonials = [
   },
   {
     quote:
-      "Our customers love the SMS notifications. No more crowded lobbies — people arrive exactly when they need to.",
+      "Our customers love the email alerts. No more crowded lobbies — people arrive exactly when they need to.",
     author: "Elena Vasquez",
     role: "Branch Manager",
     company: "CityGov Services",
@@ -157,7 +157,7 @@ export const pricingTiers = [
     features: [
       "1 branch location",
       "Up to 500 tickets/month",
-      "SMS notifications",
+      "Email notifications",
       "Basic analytics",
       "Email support",
     ],
@@ -172,7 +172,7 @@ export const pricingTiers = [
     features: [
       "Up to 10 branch locations",
       "Unlimited tickets",
-      "SMS & email notifications",
+      "Email notifications (SMS coming soon)",
       "Advanced analytics",
       "Customer feedback",
       "Priority support",
