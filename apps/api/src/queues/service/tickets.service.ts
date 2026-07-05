@@ -118,6 +118,20 @@ export class TicketsService {
     ticket.status = TicketStatus.CALLED;
     ticket.calledAt = new Date();
     const saved = await this.ticketsRepository.save(ticket);
+
+    if (saved.customerEmail) {
+      this.notifications.sendTicketCalled({
+        customerEmail: saved.customerEmail,
+        customerName: saved.customerName,
+        ticketNumber: saved.ticketNumber,
+        queueName: saved.queue.name,
+        branchName: saved.branch.name,
+        trackUrl: this.buildTrackUrl(saved.id),
+      });
+    }
+
+    await this.notifyAlmostYourTurn(queueId);
+
     return this.toResponse(saved);
   }
 
@@ -368,6 +382,33 @@ export class TicketsService {
     const webUrl =
       this.configService.get<string>("WEB_URL") ?? "http://localhost:3000";
     return `${webUrl}/ticket/${ticketId}`;
+  }
+
+  private async notifyAlmostYourTurn(queueId: string) {
+    const [third] = await this.ticketsRepository.find({
+      where: { queueId, status: TicketStatus.WAITING },
+      relations: { queue: true, branch: true },
+      order: { createdAt: "ASC" },
+      skip: 2,
+      take: 1,
+    });
+
+    if (!third?.customerEmail || third.almostTurnNotifiedAt) {
+      return;
+    }
+
+    third.almostTurnNotifiedAt = new Date();
+    await this.ticketsRepository.save(third);
+
+    this.notifications.sendAlmostYourTurn({
+      customerEmail: third.customerEmail,
+      customerName: third.customerName,
+      ticketNumber: third.ticketNumber,
+      queueName: third.queue.name,
+      branchName: third.branch.name,
+      trackUrl: this.buildTrackUrl(third.id),
+      position: 3,
+    });
   }
 
   private async createTicket(queue: Queue, dto: JoinQueueDto) {

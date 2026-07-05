@@ -68,6 +68,9 @@ export class Ticket {
   @Column({ type: "timestamptz", nullable: true })
   completedAt!: Date | null;
 
+  @Column({ type: "timestamptz", nullable: true })
+  almostTurnNotifiedAt!: Date | null;
+
   @CreateDateColumn({ type: "timestamptz" })
   createdAt!: Date;
 
