@@ -16,6 +16,7 @@ export interface Ticket {
   branchName: string;
   ticketNumber: string;
   customerName: string;
+  customerEmail: string | null;
   customerPhone: string | null;
   status: TicketStatus;
   position: number | null;
@@ -29,6 +30,7 @@ export interface Ticket {
 
 export interface JoinQueueRequest {
   customerName: string;
+  customerEmail: string;
   customerPhone?: string;
   joinToken: string;
 }
