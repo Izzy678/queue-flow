@@ -225,9 +225,9 @@ export const faqItems = [
       "Yes. All plans include a 14-day free trial with full access to features. No credit card required to start.",
   },
   {
-    question: "How do SMS notifications work?",
+    question: "How do notifications work?",
     answer:
-      "When a customer joins a queue, they can opt in to SMS alerts. They'll receive updates on their position and a notification when it's almost their turn.",
+      "Customers receive email updates when they join a queue, when they're almost up (around third in line), and when it's their turn to proceed to the counter. Each email includes a link to track their ticket status. SMS notifications are planned for a future release.",
   },
 ] as const;
 
