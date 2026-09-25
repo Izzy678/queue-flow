@@ -20,10 +20,8 @@ async function bootstrap() {
 
   // Reflect the request Origin (cannot use "*" with credentials: true).
   app.enableCors({
-    origin: true,
+    origin: ["http://localhost:3000", "https://queue-flow-web-two.vercel.app"],
     credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
   });
 
   app.useGlobalPipes(
