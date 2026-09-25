@@ -11,7 +11,6 @@ async function bootstrap() {
 
   const config = app.get(ConfigService);
   const port = config.get<number>("PORT", 3001);
-  const corsOrigin = config.get<string>("CORS_ORIGIN", "http://localhost:3000");
   const databaseUrl = config.get<string>("DATABASE_URL");
   const sessionSecret = config.get<string>(
     "SESSION_SECRET",
@@ -19,7 +18,7 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: corsOrigin,
+    origin: '*',
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   });
