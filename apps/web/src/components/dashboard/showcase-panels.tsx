@@ -34,7 +34,7 @@ export function ShowcasePanels({ className }: { className?: string }) {
   const [activeTab, setActiveTab] = useState<TabId>("monitoring");
 
   return (
-    <div className={cn("glass-strong rounded-2xl overflow-hidden gradient-border", className)}>
+    <div className={cn("glass-strong rounded-2xl overflow-hidden border border-border-strong", className)}>
       <div className="flex border-b border-border">
         {tabs.map((tab) => (
           <button

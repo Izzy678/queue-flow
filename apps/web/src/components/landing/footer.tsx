@@ -23,7 +23,7 @@ export function Footer() {
               delights customers at every touchpoint.
             </p>
             <Link href="/register">
-              <Button variant="gradient" size="sm">
+              <Button variant="default" size="sm">
                 Start free trial
                 <ArrowRight className="h-4 w-4" />
               </Button>

@@ -22,7 +22,7 @@ export function DashboardMock({ className }: DashboardMockProps) {
   return (
     <div
       className={cn(
-        "glass-strong rounded-2xl p-5 shadow-2xl shadow-black/30 gradient-border",
+        "glass-strong rounded-2xl p-5 shadow-xl shadow-black/15 border border-border-strong",
         className
       )}
     >
@@ -116,9 +116,7 @@ function StatCard({
     <div className="rounded-lg bg-surface/50 p-3">
       <div className="flex items-center gap-1.5 mb-1">
         <Icon className="h-3 w-3 text-muted" />
-        <span className="text-[10px] text-muted uppercase tracking-wider">
-          {label}
-        </span>
+        <span className="text-[10px] text-muted">{label}</span>
       </div>
       <div className="text-lg font-bold tracking-tight">
         {isText ? (

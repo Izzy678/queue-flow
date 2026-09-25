@@ -48,7 +48,7 @@ export function Navbar() {
           <Link href="/login" className={buttonVariants({ variant: "ghost", size: "sm" })}>
             Log in
           </Link>
-          <Link href="/register" className={buttonVariants({ variant: "gradient", size: "sm" })}>
+          <Link href="/register" className={buttonVariants({ variant: "default", size: "sm" })}>
             Get Started
           </Link>
         </div>
@@ -84,7 +84,7 @@ export function Navbar() {
             </Link>
             <Link
               href="/register"
-              className={buttonVariants({ variant: "gradient", size: "sm", className: "w-full" })}
+              className={buttonVariants({ variant: "default", size: "sm", className: "w-full" })}
               onClick={() => setMobileOpen(false)}
             >
               Get Started

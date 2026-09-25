@@ -24,7 +24,7 @@ export default function LoginPage() {
           <h2 className="text-3xl font-bold tracking-tight leading-tight mb-4">
             Manage every queue
             <br />
-            <span className="gradient-text">from one place.</span>
+            <span className="text-accent">from one place.</span>
           </h2>
           <p className="text-muted leading-relaxed max-w-md">
             Monitor live queues, call the next customer, and track performance

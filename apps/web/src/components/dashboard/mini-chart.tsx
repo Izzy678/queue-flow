@@ -16,7 +16,7 @@ export function MiniChart({
   type = "bar",
   className,
   data = defaultData,
-  color = "#6366f1",
+  color = "#3b82f6",
 }: MiniChartProps) {
   const max = Math.max(...data);
   const width = 200;

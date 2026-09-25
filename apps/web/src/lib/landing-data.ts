@@ -16,12 +16,12 @@ export const navLinks = [
 ] as const;
 
 export const trustedByLogos = [
-  { name: "Meridian Health", initials: "MH" },
-  { name: "Northline Bank", initials: "NB" },
-  { name: "CityGov Services", initials: "CG" },
-  { name: "RetailOne", initials: "R1" },
-  { name: "Apex Telecom", initials: "AT" },
-  { name: "Summit Clinics", initials: "SC" },
+  { name: "Meridian Health" },
+  { name: "Northline Bank" },
+  { name: "CityGov Services" },
+  { name: "RetailOne" },
+  { name: "Apex Telecom" },
+  { name: "Summit Clinics" },
 ] as const;
 
 export const features: {
@@ -91,60 +91,6 @@ export const howItWorksSteps = [
     title: "Get Served",
     description:
       "Staff calls the next ticket, serves the customer promptly, and collects optional feedback.",
-  },
-] as const;
-
-export const benefits = [
-  {
-    metric: "47%",
-    label: "Reduced congestion",
-    description:
-      "Eliminate crowded waiting areas by letting customers wait wherever they choose.",
-  },
-  {
-    metric: "3.2x",
-    label: "Better satisfaction",
-    description:
-      "Customers rate their experience higher when they have visibility and control over wait times.",
-  },
-  {
-    metric: "28%",
-    label: "Faster service delivery",
-    description:
-      "Streamlined queue flow and smart routing help staff serve more customers per hour.",
-  },
-  {
-    metric: "100%",
-    label: "Actionable analytics",
-    description:
-      "Every interaction is tracked — turn queue data into staffing and operational decisions.",
-  },
-] as const;
-
-export const testimonials = [
-  {
-    quote:
-      "QueueFlow transformed our patient experience. Wait times dropped by half and our satisfaction scores have never been higher.",
-    author: "Sarah Chen",
-    role: "Operations Director",
-    company: "Meridian Health",
-    initials: "SC",
-  },
-  {
-    quote:
-      "We deployed across 12 branches in a week. The analytics alone paid for the platform within the first month.",
-    author: "James Okonkwo",
-    role: "VP of Customer Experience",
-    company: "Northline Bank",
-    initials: "JO",
-  },
-  {
-    quote:
-      "Our customers love the email alerts. No more crowded lobbies — people arrive exactly when they need to.",
-    author: "Elena Vasquez",
-    role: "Branch Manager",
-    company: "CityGov Services",
-    initials: "EV",
   },
 ] as const;
 
@@ -258,8 +204,3 @@ export const dashboardStats = {
   customersServed: 847,
 } as const;
 
-export const heroStats = [
-  { value: 2.4, suffix: "M+", label: "Customers served" },
-  { value: 47, suffix: "%", label: "Avg. wait reduction" },
-  { value: 1200, suffix: "+", label: "Businesses trust us" },
-] as const;

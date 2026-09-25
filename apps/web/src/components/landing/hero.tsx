@@ -5,8 +5,6 @@ import { DashboardMock } from "@/components/dashboard/dashboard-mock";
 import { FloatingTicket } from "@/components/dashboard/floating-ticket";
 import { Float } from "@/components/motion/float";
 import { Reveal } from "@/components/motion/reveal";
-import { CountUp } from "@/components/motion/count-up";
-import { heroStats } from "@/lib/landing-data";
 
 export function Hero() {
   return (
@@ -17,15 +15,16 @@ export function Hero() {
             <Reveal>
               <div className="inline-flex items-center gap-2 rounded-full border border-border bg-surface-elevated px-3 py-1 text-xs text-muted mb-6">
                 <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
-                Now serving 2.4M+ customers worldwide
+                Live queue management for multi-branch teams
               </div>
             </Reveal>
 
             <Reveal delay={0.1}>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] mb-6">
+              <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] mb-6">
                 Eliminate waiting.
                 <br />
-                <span className="gradient-text">Delight every customer.</span>
+                Delight every{" "}
+                <span className="text-accent">customer.</span>
               </h1>
             </Reveal>
 
@@ -38,9 +37,9 @@ export function Hero() {
             </Reveal>
 
             <Reveal delay={0.3}>
-              <div className="flex flex-col sm:flex-row gap-3 mb-12">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <Link href="/register">
-                  <Button variant="gradient" size="lg">
+                  <Button variant="default" size="lg">
                     Start free trial
                     <ArrowRight className="h-4 w-4" />
                   </Button>
@@ -49,23 +48,6 @@ export function Hero() {
                   <Play className="h-4 w-4" />
                   Watch demo
                 </Button>
-              </div>
-            </Reveal>
-
-            <Reveal delay={0.4}>
-              <div className="flex gap-8 md:gap-12">
-                {heroStats.map((stat) => (
-                  <div key={stat.label}>
-                    <div className="text-2xl md:text-3xl font-bold tracking-tight">
-                      <CountUp
-                        end={stat.value}
-                        decimals={stat.suffix === "M+" ? 1 : 0}
-                        suffix={stat.suffix}
-                      />
-                    </div>
-                    <p className="text-xs text-muted mt-1">{stat.label}</p>
-                  </div>
-                ))}
               </div>
             </Reveal>
           </div>

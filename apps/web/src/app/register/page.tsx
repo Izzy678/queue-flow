@@ -24,7 +24,7 @@ export default function RegisterPage() {
           <h2 className="text-3xl font-bold tracking-tight leading-tight mb-4">
             Start managing queues
             <br />
-            <span className="gradient-text">in minutes.</span>
+            <span className="text-accent">in minutes.</span>
           </h2>
           <p className="text-muted leading-relaxed max-w-md">
             Whether you run one location or many branches, QueueFlow gives you

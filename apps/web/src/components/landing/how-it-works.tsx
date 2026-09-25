@@ -26,7 +26,7 @@ export function HowItWorks() {
         >
           {howItWorksSteps.map((step) => (
             <div key={step.step}>
-              <div className="text-5xl font-bold text-zinc-200 mb-4 select-none">
+              <div className="text-5xl font-bold text-foreground/10 mb-4 select-none">
                 {step.step}
               </div>
               <h3 className="text-lg font-semibold mb-2">{step.title}</h3>

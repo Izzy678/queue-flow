@@ -33,7 +33,7 @@ export function Pricing() {
               className={cn(
                 "rounded-xl border p-6 flex flex-col relative",
                 tier.highlighted
-                  ? "border-accent bg-surface-elevated shadow-lg shadow-accent/10 gradient-border"
+                  ? "border-accent bg-surface-elevated shadow-lg shadow-accent/10"
                   : "border-border bg-surface-elevated"
               )}
             >
@@ -66,7 +66,7 @@ export function Pricing() {
               </ul>
               <Link href="/register" className="w-full">
                 <Button
-                  variant={tier.highlighted ? "gradient" : "outline"}
+                  variant={tier.highlighted ? "default" : "outline"}
                   className="w-full"
                 >
                   {tier.cta}

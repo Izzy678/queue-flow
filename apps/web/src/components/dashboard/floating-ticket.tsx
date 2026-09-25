@@ -34,9 +34,7 @@ export function FloatingTicket({
       )}
     >
       <div className="flex items-center justify-between mb-3">
-        <span className="text-xs text-muted font-medium uppercase tracking-wider">
-          Ticket
-        </span>
+        <span className="text-xs text-muted font-medium">Ticket</span>
         <Badge variant={config.variant}>{config.label}</Badge>
       </div>
       <div className="text-2xl font-bold tracking-tight mb-1">{ticketNumber}</div>
