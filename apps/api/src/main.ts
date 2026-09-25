@@ -14,13 +14,16 @@ async function bootstrap() {
   const databaseUrl = config.get<string>("DATABASE_URL");
   const sessionSecret = config.get<string>(
     "SESSION_SECRET",
-    "dev-session-secret-change-in-production"
+    "dev-session-secret-change-in-production",
   );
+  const isProduction = config.get("NODE_ENV") === "production";
 
+  // Reflect the request Origin (cannot use "*" with credentials: true).
   app.enableCors({
-    origin: '*',
+    origin: true,
     credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   });
 
   app.useGlobalPipes(
@@ -28,7 +31,7 @@ async function bootstrap() {
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
-    })
+    }),
   );
 
   const PgSession = connectPgSimple(session);
@@ -42,12 +45,13 @@ async function bootstrap() {
       resave: false,
       saveUninitialized: false,
       cookie: {
-        maxAge: 7 * 24 * 60 * 60 * 1000, 
+        maxAge: 7 * 24 * 60 * 60 * 1000,
         httpOnly: true,
-        sameSite: "lax",
-        secure: config.get("NODE_ENV") === "production",
+        // Cross-site frontend ↔ API (e.g. Vercel → Railway) needs SameSite=None.
+        sameSite: isProduction ? "none" : "lax",
+        secure: isProduction,
       },
-    })
+    }),
   );
 
   app.use(passport.initialize());
