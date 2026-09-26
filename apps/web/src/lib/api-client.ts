@@ -24,7 +24,7 @@ import type {
   UpdateTenantRequest,
 } from "@queueflow/shared";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+const API_BASE = "/api";
 
 export type {
   AuthMeResponse,
@@ -48,7 +48,7 @@ export async function apiFetch<T>(
   path: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const res = await fetch(`${API_URL}/api${path}`, {
+  const res = await fetch(`${API_BASE}${path}`, {
     ...options,
     credentials: "include",
     headers: {
@@ -225,7 +225,7 @@ export function cancelTicket(ticketId: string) {
 }
 
 async function publicFetch<T>(path: string, options: RequestInit = {}) {
-  const res = await fetch(`${API_URL}/api${path}`, {
+  const res = await fetch(`${API_BASE}${path}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
