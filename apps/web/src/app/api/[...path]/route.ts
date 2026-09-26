@@ -1,5 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 const HOP_BY_HOP = new Set([
   "connection",
   "keep-alive",
@@ -18,10 +21,35 @@ function getBackendBase(): string {
   return raw.replace(/\/$/, "");
 }
 
+/** Bind the Nest session cookie to the Vercel host (same-origin browser traffic). */
+function adaptSetCookie(cookie: string, secure: boolean): string {
+  let next = cookie
+    .replace(/;\s*Domain=[^;]*/gi, "")
+    .replace(/;\s*SameSite=[^;]*/gi, "")
+    .replace(/;\s*Secure/gi, "");
+
+  next += "; SameSite=Lax";
+  if (secure) {
+    next += "; Secure";
+  }
+  return next;
+}
+
+function collectSetCookies(upstream: Headers): string[] {
+  if (typeof upstream.getSetCookie === "function") {
+    const cookies = upstream.getSetCookie();
+    if (cookies.length > 0) return cookies;
+  }
+
+  const single = upstream.get("set-cookie");
+  return single ? [single] : [];
+}
+
 async function proxy(request: NextRequest, path: string[]) {
   const backend = getBackendBase();
   const targetPath = path.join("/");
   const url = `${backend}/api/${targetPath}${request.nextUrl.search}`;
+  const secure = request.nextUrl.protocol === "https:";
 
   const headers = new Headers();
   request.headers.forEach((value, key) => {
@@ -34,6 +62,7 @@ async function proxy(request: NextRequest, path: string[]) {
     method: request.method,
     headers,
     redirect: "manual",
+    cache: "no-store",
   };
 
   if (request.method !== "GET" && request.method !== "HEAD") {
@@ -54,28 +83,24 @@ async function proxy(request: NextRequest, path: string[]) {
     );
   }
 
-  const responseHeaders = new Headers();
+  const body = await upstream.arrayBuffer();
+  const response = new NextResponse(body, {
+    status: upstream.status,
+    statusText: upstream.statusText,
+  });
+
   upstream.headers.forEach((value, key) => {
     const lower = key.toLowerCase();
     if (lower === "set-cookie") return;
     if (HOP_BY_HOP.has(lower)) return;
-    responseHeaders.set(key, value);
+    response.headers.set(key, value);
   });
 
-  // Preserve multiple Set-Cookie headers from the Nest session middleware.
-  const setCookies =
-    typeof upstream.headers.getSetCookie === "function"
-      ? upstream.headers.getSetCookie()
-      : [];
-  for (const cookie of setCookies) {
-    responseHeaders.append("set-cookie", cookie);
+  for (const cookie of collectSetCookies(upstream.headers)) {
+    response.headers.append("Set-Cookie", adaptSetCookie(cookie, secure));
   }
 
-  return new NextResponse(upstream.body, {
-    status: upstream.status,
-    statusText: upstream.statusText,
-    headers: responseHeaders,
-  });
+  return response;
 }
 
 type RouteContext = { params: Promise<{ path: string[] }> };

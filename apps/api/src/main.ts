@@ -1,13 +1,14 @@
 import { NestFactory } from "@nestjs/core";
 import { ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { NestExpressApplication } from "@nestjs/platform-express";
 import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
 import passport from "passport";
 import { AppModule } from "./app.module";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   const config = app.get(ConfigService);
   const port = config.get<number>("PORT", 3001);
@@ -18,9 +19,11 @@ async function bootstrap() {
   );
   const isProduction = config.get("NODE_ENV") === "production";
 
-  // Reflect the request Origin (cannot use "*" with credentials: true).
+  // Needed when the API sits behind Railway/Render/etc. reverse proxies.
+  app.set("trust proxy", 1);
+
   app.enableCors({
-    origin: ["http://localhost:3000", "https://queue-flow-web-two.vercel.app"],
+    origin: true,
     credentials: true,
   });
 
@@ -45,8 +48,8 @@ async function bootstrap() {
       cookie: {
         maxAge: 7 * 24 * 60 * 60 * 1000,
         httpOnly: true,
-        // Cross-site frontend ↔ API (e.g. Vercel → Railway) needs SameSite=None.
-        sameSite: isProduction ? "none" : "lax",
+        // Browser talks to the Next.js proxy (same-site); Lax is enough.
+        sameSite: "lax",
         secure: isProduction,
       },
     }),
