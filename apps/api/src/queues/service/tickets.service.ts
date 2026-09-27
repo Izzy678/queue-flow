@@ -548,24 +548,25 @@ export class TicketsService {
     allowedBranchIds?: string[] | null
   ) {
     const now = new Date();
-    const hours: number[] = [];
+    const windowStart = new Date(now);
+    windowStart.setMinutes(0, 0, 0);
+    windowStart.setHours(now.getHours() - 11);
 
-    for (let i = 11; i >= 0; i -= 1) {
-      const hourStart = new Date(now);
-      hourStart.setMinutes(0, 0, 0);
-      hourStart.setHours(now.getHours() - i);
+    const tickets = await this.ticketsRepository.find({
+      where: this.buildTicketScopeWhere(tenantId, allowedBranchIds, {
+        status: TicketStatus.COMPLETED,
+        completedAt: Between(windowStart, now),
+      }),
+      select: ["id", "completedAt"],
+    });
 
-      const hourEnd = new Date(hourStart);
-      hourEnd.setHours(hourStart.getHours() + 1);
-
-      const count = await this.ticketsRepository.count({
-        where: this.buildTicketScopeWhere(tenantId, allowedBranchIds, {
-          status: TicketStatus.COMPLETED,
-          completedAt: Between(hourStart, hourEnd),
-        }),
-      });
-
-      hours.push(count);
+    const hours = Array.from({ length: 12 }, () => 0);
+    for (const ticket of tickets) {
+      if (!ticket.completedAt) continue;
+      const idx = Math.floor(
+        (ticket.completedAt.getTime() - windowStart.getTime()) / (60 * 60 * 1000)
+      );
+      if (idx >= 0 && idx < 12) hours[idx] += 1;
     }
 
     return hours;

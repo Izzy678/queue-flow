@@ -14,6 +14,8 @@ const HOP_BY_HOP = new Set([
   "upgrade",
   "host",
   "content-length",
+  // fetch() decompresses the body; forwarding this breaks browser decode.
+  "content-encoding",
 ]);
 
 function getBackendBase(): string {
@@ -57,6 +59,9 @@ async function proxy(request: NextRequest, path: string[]) {
       headers.set(key, value);
     }
   });
+  // Avoid compressed upstream bodies; fetch() would decompress and leave a
+  // mismatched content-encoding header that breaks larger responses (e.g. stats).
+  headers.set("accept-encoding", "identity");
 
   const init: RequestInit = {
     method: request.method,
